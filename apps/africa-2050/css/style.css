@@ -2,13 +2,13 @@
    Grid stage that fills the viewport so the user never scrolls. */
 
 :root {
-  --bg:         #fafaf7;
-  --ink:        #2b2b2b;
-  --muted:      #888;
-  --rule:       #d2d2cc;
-  --paper:      #ffffff;
-  --year-base:  #b08d57;  /* 2025 — muted ochre */
-  --year-proj:  #c34a36;  /* 2035 — terra */
+  --bg:         #f7f3ec;  /* bone */
+  --ink:        #1f1a17;  /* near-black, warm */
+  --muted:      #8a8276;
+  --rule:       #c9beac;  /* taupe */
+  --paper:      #fffdf8;
+  --year-base:  #d4a373;  /* 2025 — warm sand */
+  --year-proj:  #bc4749;  /* 2035 — brick red */
   --header-h:   52px;
   --stepper-h:  84px;
   --footer-h:   22px;
@@ -293,7 +293,7 @@ html, body {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  border: 1px solid #bdb6a8;
+  border: 1px solid #c9beac;
   background: #fff;
   display: inline-block;
   cursor: pointer;
@@ -304,7 +304,7 @@ html, body {
 .circleBase.activeCircle {
   background: var(--year-proj) !important;
   border-color: var(--year-proj);
-  box-shadow: 0 0 0 2px rgba(195, 74, 54, 0.18);
+  box-shadow: 0 0 0 2px rgba(188, 71, 73, 0.22);
 }
 
 /* ---------- Footer ---------- */

@@ -33,8 +33,8 @@ export default async function slopeGraph({ state, groups, signal }) {
     title: `Top ${TOP_N} cities &mdash; ${m.label.toLowerCase()}`,
     body: `
       Africa's largest cities, ranked by ${m.label.toLowerCase()}.
-      <span style="color:#b08d57;font-weight:600;">2025 on the left</span>,
-      <span style="color:#c34a36;font-weight:600;">2035 on the right</span>.
+      <span style="color:#d4a373;font-weight:600;">2025 on the left</span>,
+      <span style="color:#bc4749;font-weight:600;">2035 on the right</span>.
       <br/><br/>
       <strong>${steepest.name}</strong> rises fastest of the top ${TOP_N}
       (+${d3.format(".0%")(steepest.gr)} in ${m.label.toLowerCase()}).
@@ -58,11 +58,11 @@ export default async function slopeGraph({ state, groups, signal }) {
   g.append("text").attr("x", X_LEFT).attr("y", PAD_TOP - 30)
     .attr("text-anchor", "middle")
     .style("font", "400 22px 'Oswald',system-ui,sans-serif")
-    .style("fill", "#b08d57").text("2025");
+    .style("fill", "#d4a373").text("2025");
   g.append("text").attr("x", X_RIGHT).attr("y", PAD_TOP - 30)
     .attr("text-anchor", "middle")
     .style("font", "400 22px 'Oswald',system-ui,sans-serif")
-    .style("fill", "#c34a36").text("2035");
+    .style("fill", "#bc4749").text("2035");
 
   const lines = g.append("g").attr("class", "slope-lines");
   const pointsL = g.append("g").attr("class", "slope-points-l");
@@ -74,16 +74,16 @@ export default async function slopeGraph({ state, groups, signal }) {
     .attr("class", "slope")
     .attr("x1", X_LEFT).attr("x2", X_RIGHT)
     .attr("y1", (d) => y(d[f25])).attr("y2", (d) => y(d[f25]))
-    .attr("stroke", "#c34a36").attr("stroke-width", 1.5)
+    .attr("stroke", "#bc4749").attr("stroke-width", 1.5)
     .attr("opacity", 0)
     .style("cursor", "pointer");
 
   pointsL.selectAll("circle").data(top, (d) => d.id).enter().append("circle")
     .attr("cx", X_LEFT).attr("cy", (d) => y(d[f25]))
-    .attr("r", 4).attr("fill", "#b08d57").attr("opacity", 0);
+    .attr("r", 4).attr("fill", "#d4a373").attr("opacity", 0);
   pointsR.selectAll("circle").data(top, (d) => d.id).enter().append("circle")
     .attr("cx", X_RIGHT).attr("cy", (d) => y(d[f35]))
-    .attr("r", 4).attr("fill", "#c34a36").attr("opacity", 0);
+    .attr("r", 4).attr("fill", "#bc4749").attr("opacity", 0);
 
   labelsL.selectAll("text").data(top, (d) => d.id).enter().append("text")
     .attr("x", LABEL_LEFT_X).attr("y", (d) => y(d[f25]) + 4)

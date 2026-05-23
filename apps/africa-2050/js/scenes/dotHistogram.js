@@ -88,7 +88,7 @@ export default async function dotHistogram({ state, groups, signal }) {
     .attr("cx", (d) => x(clamp(d.growth)))
     .attr("cy", yAxis - DOT_R - 2)
     .attr("r", 0)
-    .attr("fill", (d) => d.growth >= 0 ? "#c34a36" : "#7a8b9e")
+    .attr("fill", (d) => d.growth >= 0 ? "#bc4749" : "#7a8b9e")
     .attr("fill-opacity", 0.7)
     .style("cursor", "pointer")
     .on("mouseover", (_e, d) => focus(d))

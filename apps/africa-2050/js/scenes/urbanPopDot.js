@@ -84,7 +84,7 @@ export default async function urbanPopDot({ state, groups, signal }) {
     .attr("transform", (d) => `translate(${x(d.urban_rate_2025)},${y(d.growth)})`);
 
   bubble.append("circle")
-    .attr("r", 0).attr("fill", "#c34a36").attr("fill-opacity", 0.5)
+    .attr("r", 0).attr("fill", "#bc4749").attr("fill-opacity", 0.5)
     .attr("stroke", "#a83a28").attr("stroke-width", 0.8)
     .style("cursor", "pointer")
     .on("mouseover", (e, d) => {
@@ -92,7 +92,7 @@ export default async function urbanPopDot({ state, groups, signal }) {
       country.html(`<strong>${d.name}</strong> · ${d.iso3}<br/>
         <small>2025: ${fmtM(d.urban_pop_2025)} urban (${d3.format(".0%")(d.urban_rate_2025)})</small><br/>
         <small>2035: ${fmtM(d.urban_pop_2035)} urban (${d3.format(".0%")(d.urban_rate_2035)})</small><br/>
-        <small style="color:#c34a36;">+${d3.format(".0%")(d.growth)} over 10 years</small>`);
+        <small style="color:#bc4749;">+${d3.format(".0%")(d.growth)} over 10 years</small>`);
       const rect = e.currentTarget.getBoundingClientRect();
       wrap.style("display", "block")
           .style("left", `${rect.left + window.scrollX + 14}px`)

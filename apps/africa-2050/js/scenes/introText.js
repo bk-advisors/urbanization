@@ -18,11 +18,11 @@ export default async function introText({ state, groups, signal }) {
   const added_m = Math.round((urban_2035 - urban_2025) / 1000);
 
   setSection({
-    hero: `Africa's cities are about to grow, <span style="color:#c34a36;">again</span>.`,
+    hero: `Africa's cities are about to grow, <span style="color:#bc4749;">again</span>.`,
     title: "An Africa story in 10 years",
     body: `
-      Between <span style="color:#b08d57;font-weight:600;">2025</span> and
-      <span style="color:#c34a36;font-weight:600;">2035</span>, the UN projects
+      Between <span style="color:#d4a373;font-weight:600;">2025</span> and
+      <span style="color:#bc4749;font-weight:600;">2035</span>, the UN projects
       <strong>${added_m} million</strong> more Africans will live in cities.
       <br/><br/>
       That's the next decade across <strong>${state.cities.length}</strong>
@@ -39,6 +39,6 @@ export default async function introText({ state, groups, signal }) {
   // Faded basemap in the background — Nadieh's pattern for her opening view.
   const projection = africaProjection(state.basemap, WIDTH, HEIGHT);
   drawBasemap(groups.map, state.basemap, projection, {
-    fill: "#efeae0", stroke: "#cfc8b8", opacity: 0.55, fadeMs: 1200,
+    fill: "#ebe0cf", stroke: "#c9beac", opacity: 0.55, fadeMs: 1200,
   });
 }

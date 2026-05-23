@@ -29,8 +29,8 @@ export default async function totalAreaMap({ state, groups, signal }) {
     title: `African cities &mdash; ${m.label.toLowerCase()}`,
     body: `
       Every African city of 300,000+ people. Each shown twice:
-      <span style="color:#b08d57;font-weight:600;">pale ring 2025</span>,
-      <span style="color:#c34a36;font-weight:600;">solid dot 2035</span>.
+      <span style="color:#d4a373;font-weight:600;">pale ring 2025</span>,
+      <span style="color:#bc4749;font-weight:600;">solid dot 2035</span>.
       <br/><br/>
       Headline cluster: <strong>${biggest.map((c) => c.name).join(", ")}</strong>
       dominate by sheer size.
@@ -53,8 +53,8 @@ export default async function totalAreaMap({ state, groups, signal }) {
   const max = d3.max(valid, (c) => Math.max(c[f25] ?? 0, c[f35] ?? 0));
   const r = d3.scaleSqrt().domain([0, max]).range([0, 38]);
 
-  drawLayer(groups.cities2035, valid, f35, { fill: "#c34a36", opacity: 0.55 });
-  drawLayer(groups.cities2025, valid, f25, { fill: "none", opacity: 1, stroke: "#b08d57", strokeWidth: 1.2 });
+  drawLayer(groups.cities2035, valid, f35, { fill: "#bc4749", opacity: 0.55 });
+  drawLayer(groups.cities2025, valid, f25, { fill: "none", opacity: 1, stroke: "#d4a373", strokeWidth: 1.2 });
 
   function drawLayer(group, data, field, { fill, opacity, stroke, strokeWidth = 0 }) {
     const sel = group.style("opacity", 1)

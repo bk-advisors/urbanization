@@ -18,7 +18,7 @@ export default async function finalText({ state, groups, signal }) {
   const added_m = Math.round((urban_2035 - urban_2025) / 1000);
 
   setSection({
-    hero: `<span style="color:#c34a36;">${added_m} million</span><br/>new urban Africans by 2035.`,
+    hero: `<span style="color:#bc4749;">${added_m} million</span><br/>new urban Africans by 2035.`,
     title: "Planning for the next 10 years",
     body: `
       The OECD/AfDB/Cities Alliance/UCLG Africa report frames it as a choice:
@@ -41,6 +41,6 @@ export default async function finalText({ state, groups, signal }) {
 
   const projection = africaProjection(state.basemap, WIDTH, HEIGHT);
   drawBasemap(groups.map, state.basemap, projection, {
-    fill: "#efeae0", stroke: "#cfc8b8", opacity: 0.55, fadeMs: 1200,
+    fill: "#ebe0cf", stroke: "#c9beac", opacity: 0.55, fadeMs: 1200,
   });
 }

@@ -145,7 +145,7 @@ export function africaProjection(basemap, width, height) {
 // background) and Scene 2 (full opacity).
 // ---------------------------------------------------------------------------
 
-export function drawBasemap(group, basemap, projection, { fill = "#efeae0", stroke = "#cfc8b8", strokeWidth = 0.6, opacity = 1, fadeMs = 500 } = {}) {
+export function drawBasemap(group, basemap, projection, { fill = "#ebe0cf", stroke = "#c9beac", strokeWidth = 0.6, opacity = 1, fadeMs = 500 } = {}) {
   const path = d3.geoPath(projection);
   const sel = group.style("opacity", 1)
     .selectAll("path.country").data(basemap.features);
@@ -180,24 +180,24 @@ export function teaserSlope(group, cities) {
   g.selectAll("*").remove();
 
   g.append("text").attr("x", xL).attr("y", TEASER_Y).attr("text-anchor", "middle")
-    .style("font", "400 18px 'Oswald',system-ui,sans-serif").style("fill", "#b08d57").text("2025");
+    .style("font", "400 18px 'Oswald',system-ui,sans-serif").style("fill", "#d4a373").text("2025");
   g.append("text").attr("x", xR).attr("y", TEASER_Y).attr("text-anchor", "middle")
-    .style("font", "400 18px 'Oswald',system-ui,sans-serif").style("fill", "#c34a36").text("2035");
+    .style("font", "400 18px 'Oswald',system-ui,sans-serif").style("fill", "#bc4749").text("2035");
 
   const line = g.selectAll("line.tease").data(top).enter().append("line")
     .attr("class", "tease")
     .attr("x1", xL).attr("x2", xR)
     .attr("y1", (d) => y(d.pop_2025)).attr("y2", (d) => y(d.pop_2025))
-    .attr("stroke", "#c34a36").attr("stroke-width", 1.4)
+    .attr("stroke", "#bc4749").attr("stroke-width", 1.4)
     .attr("opacity", 0);
 
   g.selectAll("circle.l").data(top).enter().append("circle").attr("class", "l")
     .attr("cx", xL).attr("cy", (d) => y(d.pop_2025))
-    .attr("r", 4).attr("fill", "#b08d57").attr("opacity", 0)
+    .attr("r", 4).attr("fill", "#d4a373").attr("opacity", 0)
     .transition().duration(400).attr("opacity", 1);
   g.selectAll("circle.r").data(top).enter().append("circle").attr("class", "r")
     .attr("cx", xR).attr("cy", (d) => y(d.pop_2035))
-    .attr("r", 4).attr("fill", "#c34a36").attr("opacity", 0)
+    .attr("r", 4).attr("fill", "#bc4749").attr("opacity", 0)
     .transition().delay(300).duration(400).attr("opacity", 1);
 
   line.transition().duration(700).delay(200)
@@ -247,7 +247,7 @@ export function teaserHistogram(group, cities) {
         .attr("cx", x((bin.x0 + bin.x1) / 2))
         .attr("cy", yBase - 6)
         .attr("r", 3)
-        .attr("fill", d.growth >= 0 ? "#c34a36" : "#7a8b9e")
+        .attr("fill", d.growth >= 0 ? "#bc4749" : "#7a8b9e")
         .attr("fill-opacity", 0.65)
         .transition().duration(500).delay(150 + i * 18)
         .attr("cy", yBase - 6 - i * 7);
@@ -286,7 +286,7 @@ export function teaserScatter(group, countries) {
     .attr("cx", (d) => x(d.urban_rate_2025))
     .attr("cy", (d) => y(d.growth))
     .attr("r", 0)
-    .attr("fill", "#c34a36").attr("fill-opacity", 0.5)
+    .attr("fill", "#bc4749").attr("fill-opacity", 0.5)
     .attr("stroke", "#a83a28").attr("stroke-width", 0.6)
     .transition().duration(600).delay((_d, i) => i * 60)
     .attr("r", (d) => r(d.urban_pop_2035));

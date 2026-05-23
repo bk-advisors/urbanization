@@ -17,15 +17,15 @@ export default async function startBar({ state, groups, signal }) {
   const fmtPct = d3.format(".0%");
 
   setSection({
-    hero: `+ <span style="color:#c34a36;">${fmtM(urban_2035 - urban_2025)}</span><br/>urban Africans in 10 years.`,
+    hero: `+ <span style="color:#bc4749;">${fmtM(urban_2035 - urban_2025)}</span><br/>urban Africans in 10 years.`,
     title: "Urban Africa, end to end",
     body: `
       Sum every city and town across all 54 African countries.
       <br/><br/>
-      In <span style="color:#b08d57;font-weight:600;">2025</span>:
+      In <span style="color:#d4a373;font-weight:600;">2025</span>:
       <strong>${fmtM(urban_2025)}</strong> people live in urban areas.
       <br/>
-      By <span style="color:#c34a36;font-weight:600;">2035</span>:
+      By <span style="color:#bc4749;font-weight:600;">2035</span>:
       <strong>${fmtM(urban_2035)}</strong> — a
       <strong>${fmtPct((urban_2035 - urban_2025) / urban_2025)}</strong>
       increase in just a decade.
@@ -49,8 +49,8 @@ export default async function startBar({ state, groups, signal }) {
   g.selectAll("*").remove();
 
   const data = [
-    { label: "2025", value: urban_2025, color: "#b08d57", y: y0 },
-    { label: "2035", value: urban_2035, color: "#c34a36", y: y0 + barH + gap },
+    { label: "2025", value: urban_2025, color: "#d4a373", y: y0 },
+    { label: "2035", value: urban_2035, color: "#bc4749", y: y0 + barH + gap },
   ];
 
   g.selectAll("text.year").data(data).enter().append("text")
@@ -94,7 +94,7 @@ export default async function startBar({ state, groups, signal }) {
     .attr("x", (startX + endX) / 2).attr("y", y0 + barH * 2 + gap + 36)
     .attr("text-anchor", "middle")
     .style("font", "300 18px 'Oswald',system-ui,sans-serif")
-    .style("fill", "#c34a36")
+    .style("fill", "#bc4749")
     .style("opacity", 0)
     .text(`+ ${fmtM(urban_2035 - urban_2025)}`)
     .transition().delay(1700).duration(400).style("opacity", 0.95);
