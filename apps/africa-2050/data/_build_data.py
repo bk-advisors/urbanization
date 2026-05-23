@@ -30,9 +30,12 @@ Outputs (in data/, committed):
 from __future__ import annotations
 
 import json
+import urllib.request
 from pathlib import Path
 
 import openpyxl
+
+WB_API = "https://api.worldbank.org/v2"
 
 DATA_DIR = Path(__file__).parent
 RAW = DATA_DIR / "raw"
@@ -163,60 +166,99 @@ def build_cities() -> None:
           f"{(DATA_DIR / 'cities.js').stat().st_size / 1024:.0f} KB")
 
 
+def _wb_indicator(code: str, years: tuple[int, int]) -> dict[str, dict[int, float]]:
+    """Fetch a World Bank indicator for all 54 African sovereigns over a year range.
+    Returns {iso3: {year: value}}. Skips nulls."""
+    iso_csv = ";".join(sorted(SOVEREIGN_ISO))
+    url = (
+        f"{WB_API}/country/{iso_csv}/indicator/{code}"
+        f"?format=json&date={years[0]}:{years[1]}&per_page=2000"
+    )
+    with urllib.request.urlopen(url, timeout=60) as resp:
+        data = json.loads(resp.read())
+    out: dict[str, dict[int, float]] = {}
+    for r in data[1] or []:
+        if r["value"] is None:
+            continue
+        out.setdefault(r["countryiso3code"], {})[int(r["date"])] = r["value"]
+    return out
+
+
 def build_countries() -> None:
-    """For each African sovereign, derive country-level aggregates from F01:
+    """For each African sovereign, build country-level urbanisation aggregates:
     {iso3, name, urban_pop_2025, urban_pop_2035, total_pop_2025, total_pop_2035,
-    urban_rate_2025, urban_rate_2035}. Populations are in thousands."""
+    urban_rate_2025, urban_rate_2035}. Populations are in thousands.
 
-    def by_iso(sheet_name: str) -> dict[str, dict[str, float]]:
-        header, rows = _load_sheet(
-            WUP / "WUP2025-F01-Degree-of-Urbanization_Pop_by_category.xlsx",
-            sheet_name,
-        )
-        i_iso, i_name = header.index("ISO3_Code"), header.index("Location")
-        i_b, i_p = header.index(BASE_YEAR), header.index(PROJ_YEAR)
-        out: dict[str, dict] = {}
-        for r in rows:
-            iso = r[i_iso]
-            if iso not in SOVEREIGN_ISO:
-                continue
-            out[iso] = {
-                "name": r[i_name],
-                BASE_YEAR: r[i_b] if isinstance(r[i_b], (int, float)) else 0.0,
-                PROJ_YEAR: r[i_p] if isinstance(r[i_p], (int, float)) else 0.0,
-            }
-        return out
+    Why World Bank + linear extrapolation (not WUP 2025 DEGURBA):
+        WUP 2025 country-level urbanisation only ships under DEGURBA (1 km² grid-cell
+        density). DEGURBA reclassifies dense rural villages as urban, which inflates
+        sub-Saharan African rates ~30–75 pp above the national-definition figures
+        readers expect from Wikipedia / World Bank (Rwanda 94% vs 18%, Egypt 97% vs 43%).
+        WUP 2018 (the last national-definition revision) has been retired from UN
+        servers. So we source urban % from World Bank SP.URB.TOTL.IN.ZS, which is
+        itself derived from WUP national definitions and is the audience-canonical
+        series. 2024 is the latest WB actual — used as the 2025 baseline. 2035 is
+        linearly extrapolated from the WB 2014→2024 trend. Total-population
+        denominators come from WUP 2025 F01 ("Total" sheet) — those weren't affected
+        by the DEGURBA issue.
+    """
+    # World Bank: latest actual urban rate (2024 → labelled 2025) + 10-yr trend.
+    rate_pct = _wb_indicator("SP.URB.TOTL.IN.ZS", (2014, 2024))
 
-    cities = by_iso("Cities")        # population living in Cities (DEGURBA Level 1)
-    cities_towns = by_iso("Cities and Towns")  # = urban population (UN definition)
-    total = by_iso("Total")          # total population
+    # WUP 2025 F01 "Total" sheet supplies total-population denominators in thousands.
+    total_header, total_rows = _load_sheet(
+        WUP / "WUP2025-F01-Degree-of-Urbanization_Pop_by_category.xlsx", "Total"
+    )
+    i_iso = total_header.index("ISO3_Code")
+    i_name = total_header.index("Location")
+    i_b, i_p = total_header.index(BASE_YEAR), total_header.index(PROJ_YEAR)
+    total_pop: dict[str, dict] = {}
+    for r in total_rows:
+        iso = r[i_iso]
+        if iso not in SOVEREIGN_ISO:
+            continue
+        total_pop[iso] = {
+            "name": r[i_name],
+            "t25": r[i_b] if isinstance(r[i_b], (int, float)) else 0.0,
+            "t35": r[i_p] if isinstance(r[i_p], (int, float)) else 0.0,
+        }
 
     countries: list[dict] = []
     for iso in sorted(SOVEREIGN_ISO):
-        c = cities_towns.get(iso) or cities.get(iso) or total.get(iso)
-        if not c:
+        tp = total_pop.get(iso)
+        rs = rate_pct.get(iso)
+        if not tp or not rs or 2024 not in rs:
+            print(f"  WARN: missing data for {iso}")
             continue
-        upop_25 = (cities_towns.get(iso) or {}).get(BASE_YEAR, 0)
-        upop_35 = (cities_towns.get(iso) or {}).get(PROJ_YEAR, 0)
-        tpop_25 = (total.get(iso) or {}).get(BASE_YEAR, 0)
-        tpop_35 = (total.get(iso) or {}).get(PROJ_YEAR, 0)
+        r25 = rs[2024] / 100.0
+        # Linear extrapolation from prior decade. Prefer 2014 anchor; fall back
+        # to the earliest year ≥ 2014 we actually have.
+        anchor_year = next((y for y in range(2014, 2024) if y in rs), None)
+        if anchor_year is not None:
+            slope_per_yr = (rs[2024] - rs[anchor_year]) / (2024 - anchor_year) / 100.0
+        else:
+            slope_per_yr = 0.0
+        r35 = max(0.0, min(1.0, r25 + slope_per_yr * 10))
         countries.append({
             "iso3": iso,
-            "name": c["name"],
-            "urban_pop_2025": round(upop_25, 0),
-            "urban_pop_2035": round(upop_35, 0),
-            "total_pop_2025": round(tpop_25, 0),
-            "total_pop_2035": round(tpop_35, 0),
-            "urban_rate_2025": round(upop_25 / tpop_25, 4) if tpop_25 else 0,
-            "urban_rate_2035": round(upop_35 / tpop_35, 4) if tpop_35 else 0,
+            "name": tp["name"],
+            "urban_pop_2025": round(tp["t25"] * r25, 0),
+            "urban_pop_2035": round(tp["t35"] * r35, 0),
+            "total_pop_2025": round(tp["t25"], 0),
+            "total_pop_2035": round(tp["t35"], 0),
+            "urban_rate_2025": round(r25, 4),
+            "urban_rate_2035": round(r35, 4),
         })
 
     countries.sort(key=lambda x: x["urban_pop_2035"], reverse=True)
 
     js = (
         "// Africa countries — country-level urbanisation aggregates, 2025 + 2035.\n"
-        "// Source: UN DESA Population Division, World Urbanization Prospects 2025\n"
-        "//         File F01 (DEGURBA Pop by category). https://population.un.org/wup/\n"
+        "// Urban %:   World Bank SP.URB.TOTL.IN.ZS (2024 actual = '2025' baseline;\n"
+        "//            2035 = linear extrapolation of 2014→2024 trend).\n"
+        "//            https://data.worldbank.org/indicator/SP.URB.TOTL.IN.ZS\n"
+        "// Total pop: UN DESA WUP 2025 F01, 'Total' sheet (2025 + 2035 medium-variant).\n"
+        "//            https://population.un.org/wup/\n"
         f"// {len(countries)} sovereign African countries.\n"
         "// All populations in thousands of people; urban_rate as fraction 0..1.\n"
         "// Sorted by urban_pop_2035 descending. Built by data/_build_data.py.\n\n"
