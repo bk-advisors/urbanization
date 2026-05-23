@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Africa 2025→2035 — data sanity check</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 24px; color: #222; }
+      h1 { font-weight: 300; }
+      h2 { margin-top: 32px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+      table { border-collapse: collapse; margin-top: 8px; font-size: 13px; }
+      th, td { padding: 4px 10px; text-align: left; border-bottom: 1px solid #eee; }
+      th { background: #f5f5f0; }
+      td.num { text-align: right; font-variant-numeric: tabular-nums; }
+      .ok { color: #2e7d32; }
+      .bad { color: #c62828; font-weight: 600; }
+      .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+      svg { background: #fafaf7; border: 1px solid #e6e6e1; }
+      circle { fill: #c34a36; fill-opacity: 0.5; stroke: none; }
+      path.country { fill: #efeae0; stroke: #b8b3a8; stroke-width: 0.5; }
+    </style>
+  </head>
+  <body>
+    <h1>Africa 2025→2035 — data sanity check</h1>
+    <p>Source: UN World Urbanization Prospects 2025 (DEGURBA methodology).
+       Populations shown in <strong>thousands of people</strong>.</p>
+
+    <div id="summary"></div>
+
+    <div class="grid">
+      <div>
+        <h2>Top 20 African cities by Population 2025</h2>
+        <div id="top-cities"></div>
+      </div>
+      <div>
+        <h2>Top 15 countries by Urban population 2035</h2>
+        <div id="top-countries"></div>
+      </div>
+    </div>
+
+    <h2>Spot-check: city dots on Africa basemap (sized by pop 2025)</h2>
+    <svg id="map" width="640" height="640"></svg>
+
+    <script type="module">
+      import { cities }    from "./cities.js";
+      import { countries } from "./countries.js";
+
+      const num = d3.format(",.0f");
+      const pct = d3.format(".1%");
+
+      const checks = [
+        ["cities.js loaded",            cities.length > 100,         `${cities.length} cities ≥300K`],
+        ["countries.js loaded",         countries.length === 54,     `${countries.length} sovereigns`],
+        ["all cities have lat/lng",     cities.every(c => c.lat && c.lng), ""],
+        ["all cities have pop_2025",    cities.every(c => c.pop_2025 > 0), ""],
+        ["Cairo found",                 !!cities.find(c => c.name.includes("Cairo") || c.name.includes("Qahirah")), ""],
+        ["Lagos found",                 !!cities.find(c => c.name === "Lagos"), ""],
+        ["Nigeria found",               !!countries.find(c => c.iso3 === "NGA"), ""],
+        ["Egypt found",                 !!countries.find(c => c.iso3 === "EGY"), ""],
+      ];
+      d3.select("#summary").append("ul").selectAll("li").data(checks).enter().append("li")
+        .html(d => `<span class="${d[1] ? 'ok' : 'bad'}">${d[1] ? '✓' : '✗'}</span> ${d[0]} ${d[2] ? `<small>(${d[2]})</small>` : ''}`);
+
+      const aTbl = d3.select("#top-cities").append("table");
+      aTbl.append("thead").append("tr").selectAll("th")
+        .data(["#", "City", "ISO", "Pop 2025 (000s)", "Pop 2035 (000s)", "Growth"]).enter().append("th").text(d => d);
+      aTbl.append("tbody").selectAll("tr").data(cities.slice(0, 20)).enter().append("tr")
+        .each(function(d, i) {
+          const tr = d3.select(this);
+          tr.append("td").text(i + 1);
+          tr.append("td").text(d.name);
+          tr.append("td").text(d.iso3);
+          tr.append("td").attr("class", "num").text(num(d.pop_2025));
+          tr.append("td").attr("class", "num").text(d.pop_2035 ? num(d.pop_2035) : "—");
+          tr.append("td").attr("class", "num").text(d.pop_2035 ? pct(d.pop_2035 / d.pop_2025 - 1) : "—");
+        });
+
+      const cTbl = d3.select("#top-countries").append("table");
+      cTbl.append("thead").append("tr").selectAll("th")
+        .data(["#", "Country", "Urban pop 2025", "Urban pop 2035", "Urb rate 2025", "Urb rate 2035"]).enter().append("th").text(d => d);
+      cTbl.append("tbody").selectAll("tr").data(countries.slice(0, 15)).enter().append("tr")
+        .each(function(d, i) {
+          const tr = d3.select(this);
+          tr.append("td").text(i + 1);
+          tr.append("td").text(d.name);
+          tr.append("td").attr("class", "num").text(num(d.urban_pop_2025));
+          tr.append("td").attr("class", "num").text(num(d.urban_pop_2035));
+          tr.append("td").attr("class", "num").text(pct(d.urban_rate_2025));
+          tr.append("td").attr("class", "num").text(pct(d.urban_rate_2035));
+        });
+
+      const basemap = await d3.json("./africa_countries.geojson");
+      const svg = d3.select("#map");
+      const projection = d3.geoMercator().fitSize([640, 640], basemap);
+      const path = d3.geoPath(projection);
+      svg.append("g").selectAll("path").data(basemap.features).enter()
+        .append("path").attr("class", "country").attr("d", path);
+      const r = d3.scaleSqrt()
+        .domain([0, d3.max(cities, d => d.pop_2025)])
+        .range([0, 20]);
+      svg.append("g").selectAll("circle").data(cities).enter()
+        .append("circle")
+        .attr("cx", d => projection([d.lng, d.lat])[0])
+        .attr("cy", d => projection([d.lng, d.lat])[1])
+        .attr("r",  d => r(d.pop_2025))
+        .append("title").text(d => `${d.name} (${d.iso3}) — pop 2025: ${num(d.pop_2025)}K`);
+    </script>
+  </body>
+</html>

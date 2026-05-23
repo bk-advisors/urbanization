@@ -1,0 +1,22 @@
+source reports/
+d3 reference book/
+media/
+~$*.docx
+~$*.xlsx
+.DS_Store
+Thumbs.db
+
+# Raw upstream data — large, regenerable via apps/africa-2050/data/_build_data.py
+apps/africa-2050/data/raw/
+
+# Private / local-only files
+CLAUDE.md
+.claude/
+.vscode/
+.idea/
+*.local
+.env
+.env.*
+*.bak
+*~
+

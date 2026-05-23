@@ -1,0 +1,333 @@
+/* Africa 2025 → 2035 — full layout.
+   Grid stage that fills the viewport so the user never scrolls. */
+
+:root {
+  --bg:         #fafaf7;
+  --ink:        #2b2b2b;
+  --muted:      #888;
+  --rule:       #d2d2cc;
+  --paper:      #ffffff;
+  --year-base:  #b08d57;  /* 2025 — muted ochre */
+  --year-proj:  #c34a36;  /* 2035 — terra */
+  --header-h:   52px;
+  --stepper-h:  84px;
+  --footer-h:   22px;
+  --section-w:  320px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;                /* never scroll */
+  font-family: 'Open Sans', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+/* ---------- Stage: grid that fills the viewport ---------- */
+
+#stage {
+  display: grid;
+  grid-template-rows: var(--header-h) 1fr var(--stepper-h);
+  grid-template-columns: 1fr;
+  height: 100vh;
+  width: 100vw;
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---------- Header ---------- */
+
+#header {
+  display: flex;
+  align-items: center;
+  padding-top: 16px;
+  border-bottom: 1px solid var(--rule);
+}
+
+#titleAll {
+  margin: 0;
+  font-family: 'Oswald', system-ui, sans-serif;
+  font-weight: 300;
+  font-size: 22px;
+  letter-spacing: 0.3px;
+  color: var(--ink);
+}
+
+#titleAll .year-base { color: var(--year-base); font-weight: 400; }
+#titleAll .year-proj { color: var(--year-proj); font-weight: 400; }
+
+/* ---------- Main: chart + section side by side ---------- */
+
+#main {
+  display: grid;
+  grid-template-columns: 1fr var(--section-w);
+  gap: 12px;                       /* tighter — keep narrative close to visual */
+  min-height: 0;
+  padding: 16px 0 8px;
+}
+
+/* ---------- Chart column ---------- */
+/* Right-align the chart inside its column so the visual hugs the narration
+   panel — Tufte / Cairo / Few: text belongs adjacent to the data, not floating
+   on the far side of the page. */
+
+#chartCol {
+  position: relative;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+}
+
+#chart {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#chart svg {
+  width: 100%;
+  height: 100%;
+  max-width: 1000px;
+  max-height: 100%;
+  display: block;
+}
+
+/* Narration overlays removed entirely — every word lives in #section. */
+
+/* ---------- Section panel (right) ---------- */
+
+#section {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#sectionHero {
+  font-family: 'Oswald', system-ui, sans-serif;
+  font-weight: 300;
+  font-size: 22px;
+  line-height: 1.2;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+
+#sectionHero:empty { display: none; }
+
+#sectionTitle {
+  font-family: 'Oswald', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 17px;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+#sectionTitle:empty { display: none; }
+
+#sectionText {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #555;
+  margin-bottom: 16px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Mode-switch button group */
+
+.btn-group { display: flex; gap: 6px; }
+
+.mode-btn {
+  flex: 1;
+  padding: 6px 4px;
+  font: 11px/1.2 'Open Sans', system-ui, sans-serif;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: #777;
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.mode-btn:hover { color: var(--ink); border-color: #aaa; }
+.mode-btn.active {
+  background: var(--year-proj);
+  border-color: var(--year-proj);
+  color: #fff;
+}
+
+/* ---------- Callout (lower-left overlay) ---------- */
+
+#callOut {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 320px;
+  padding: 10px 12px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  visibility: hidden;
+  z-index: 6;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.callOutTitle {
+  font-family: 'Oswald', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+#callOutrule {
+  height: 1px;
+  background: var(--rule);
+  margin-bottom: 6px;
+}
+
+#callOut table { width: 100%; border-collapse: collapse; font-size: 11px; }
+#callOut th { font-weight: 600; text-align: left; padding: 2px 4px 4px 0; border-bottom: 1px solid #ececec; color: #666; }
+#callOut th small { color: #aaa; font-weight: 400; }
+#callOut td { padding: 2px 4px; font-variant-numeric: tabular-nums; }
+#callOut .year-base-lbl { color: var(--year-base); font-weight: 600; }
+#callOut .year-proj-lbl { color: var(--year-proj); font-weight: 600; }
+#callOut #td-perc { font-size: 10px; color: #999; padding-top: 4px; }
+
+#callOutCountryWrapper {
+  position: fixed;
+  display: none;
+  z-index: 7;
+  padding: 6px 10px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+/* Don't render the empty box if a scene forgot to clear its content. */
+#callOutCountryWrapper:has(#callOutCountry:empty) { display: none !important; }
+
+#callOutCountry { font-size: 13px; }
+
+/* ---------- Stepper (bottom row) ---------- */
+
+#clickerWrapper {
+  border-top: 1px solid var(--rule);
+  padding: 10px 0 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg);
+}
+
+/* Progress track hidden — no auto-advance, no need for a fill bar. */
+#progressTrack { display: none; }
+
+#progressButtonWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.progressButton {
+  font: 11px/1.2 'Open Sans', system-ui, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 6px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  cursor: pointer;
+  user-select: none;
+  background: var(--paper);
+  color: var(--ink);
+  margin: 0 12px;
+  transition: opacity 0.15s, border-color 0.15s;
+}
+
+.progressButton:hover { border-color: #888; }
+.progressButton.inactiveButton {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Each circle + its label, stacked in its own positioned wrapper —
+   no more JS-positioned overlap. */
+.circle-wrap {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 6px;
+  width: 22px;
+}
+
+.step-label {
+  font: 10px/1 'Open Sans', system-ui, sans-serif;
+  letter-spacing: 0.4px;
+  color: #888;
+  margin-bottom: 4px;
+  height: 11px;
+  white-space: nowrap;
+}
+
+.step-label.hidden-label { visibility: hidden; }
+
+.circleBase {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid #bdb6a8;
+  background: #fff;
+  display: inline-block;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+
+.circleBase:hover { transform: scale(1.25); border-color: #555; }
+.circleBase.activeCircle {
+  background: var(--year-proj) !important;
+  border-color: var(--year-proj);
+  box-shadow: 0 0 0 2px rgba(195, 74, 54, 0.18);
+}
+
+/* ---------- Footer ---------- */
+
+#credits {
+  position: fixed;
+  bottom: 4px;
+  right: 12px;
+  font-size: 10px;
+  color: var(--muted);
+  z-index: 1;
+  pointer-events: auto;
+}
+
+#credits a { color: #777; }
+
+@media (max-width: 1200px) {
+  #credits { display: none; }
+}
+
+@media (max-height: 720px) {
+  :root { --header-h: 44px; --stepper-h: 76px; }
+  #titleAll { font-size: 18px; }
+  #sectionText { font-size: 12px; line-height: 1.5; }
+  #sectionHero { font-size: 19px; }
+}

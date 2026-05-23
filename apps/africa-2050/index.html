@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Africa's Urbanisation Dynamics 2025 — 2035</title>
+
+    <meta name="description" content="A narrative D3 visualization of Africa's urban growth from 2025 to 2035, across 328 cities and 54 countries. Data: UN World Urbanization Prospects 2025." />
+    <meta name="author" content="Matthew Kuch, BK-Advisors" />
+
+    <meta property="og:title" content="Africa's Urbanisation Dynamics 2025 — 2035" />
+    <meta property="og:description" content="328 African cities, 54 countries, one decade of urban growth. A D3 visualization by Matthew Kuch / BK-Advisors, inspired by Nadieh Bremer's 2015 East Asia piece." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bk-advisors.github.io/africa-2050/" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23fafaf7'/%3E%3Ccircle cx='12' cy='16' r='5' fill='none' stroke='%23b08d57' stroke-width='1.6'/%3E%3Ccircle cx='20' cy='16' r='7' fill='%23c34a36' fill-opacity='0.85'/%3E%3C/svg%3E" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Oswald:300,400,700|Open+Sans:400,600"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script defer type="module" src="js/main.js"></script>
+  </head>
+  <body>
+    <!-- Single grid stage: header / chart+section / stepper -->
+    <div id="stage">
+
+      <header id="header">
+        <h1 id="titleAll">
+          <span>Africa's Urbanisation Dynamics between </span>
+          <span class="year-base">2025</span>
+          <span> and </span>
+          <span class="year-proj">2035</span>
+        </h1>
+      </header>
+
+      <main id="main">
+        <!-- Chart column: SVG + callout overlay only (no narration text here) -->
+        <div id="chartCol">
+          <div id="chart"></div>
+
+          <div id="callOut">
+            <div id="callOutCity" class="callOutTitle"></div>
+            <div id="callOutrule"></div>
+            <table class="fixed">
+              <tr>
+                <th></th>
+                <th>Pop<br><small>[K]</small></th>
+                <th>Land<br><small>[km²]</small></th>
+                <th>Density<br><small>[/km²]</small></th>
+              </tr>
+              <tr>
+                <td><span class="year-base-lbl">2025</span></td>
+                <td id="td-pop-2025">0</td>
+                <td id="td-land-2025">0</td>
+                <td id="td-density-2025">0</td>
+              </tr>
+              <tr>
+                <td><span class="year-proj-lbl">2035</span></td>
+                <td id="td-pop-2035">0</td>
+                <td id="td-land-2035">0</td>
+                <td id="td-density-2035">0</td>
+              </tr>
+              <tr>
+                <td id="td-perc">Δ%</td>
+                <td id="td-pop-perc">0%</td>
+                <td id="td-land-perc">0%</td>
+                <td id="td-density-perc">0%</td>
+              </tr>
+            </table>
+          </div>
+
+          <div id="callOutCountryWrapper">
+            <div id="callOutCountry" class="callOutTitle"></div>
+          </div>
+        </div>
+
+        <!-- Right-side section panel — single source of all narration -->
+        <aside id="section">
+          <div id="sectionHero"></div>
+          <div id="sectionTitle"></div>
+          <div id="sectionText"></div>
+          <div id="modeSwitch" class="btn-group" role="radiogroup">
+            <button id="popButton"  class="mode-btn active" data-mode="pop">Population</button>
+            <button id="landButton" class="mode-btn"        data-mode="land">Urban Land</button>
+            <button id="densButton" class="mode-btn"        data-mode="density">Density</button>
+          </div>
+        </aside>
+      </main>
+
+      <!-- Stepper at the bottom -->
+      <nav id="clickerWrapper" aria-label="Story progress">
+        <div id="progressTrack"><div id="progressFill"></div></div>
+
+        <div id="progressButtonWrapper">
+          <button id="clickerBack" class="progressButton inactiveButton">Back</button>
+
+          <span class="circle-wrap">
+            <span class="step-label hidden-label">start</span>
+            <span id="circle_0" class="circleBase clickable" data-step="0"></span>
+          </span>
+          <span class="circle-wrap">
+            <span class="step-label hidden-label">bars</span>
+            <span id="circle_1" class="circleBase clickable" data-step="1"></span>
+          </span>
+          <span class="circle-wrap">
+            <span class="step-label">map</span>
+            <span id="circle_2" class="circleBase clickable" data-step="2"></span>
+          </span>
+          <span class="circle-wrap">
+            <span class="step-label hidden-label">·</span>
+            <span id="circle_3" class="circleBase clickable" data-step="3"></span>
+          </span>
+          <span class="circle-wrap">
+            <span class="step-label">slope</span>
+            <span id="circle_4" class="circleBase clickable" data-step="4"></span>
+          </span>
+          <span class="circle-wrap">
+            <span class="step-label hidden-label">·</span>
+            <span id="circle_5" class="circleBase clickable" data-step="5"></span>
+          </span>
+          <span class="circle-wrap">
+            <span class="step-label">histogram</span>
+            <span id="circle_6" class="circleBase clickable" data-step="6"></span>
+          </span>
+          <span class="circle-wrap">
+            <span class="step-label hidden-label">·</span>
+            <span id="circle_7" class="circleBase clickable" data-step="7"></span>
+          </span>
+          <span class="circle-wrap">
+            <span class="step-label">scatter</span>
+            <span id="circle_8" class="circleBase clickable" data-step="8"></span>
+          </span>
+          <span class="circle-wrap">
+            <span class="step-label hidden-label">end</span>
+            <span id="circle_9" class="circleBase clickable" data-step="9"></span>
+          </span>
+
+          <button id="clickerFront" class="progressButton activeButton">Continue</button>
+        </div>
+      </nav>
+    </div>
+
+    <footer id="credits">
+      Built by <a href="https://bk-advisors.github.io/">Matthew Kuch</a> &middot;
+      <a href="https://bk-advisors.github.io/">BK-Advisors</a> &middot;
+      data <a href="https://population.un.org/wup/">UN WUP 2025</a> &middot;
+      narrative <a href="https://doi.org/10.1787/2a47845c-en">OECD (2025)</a> &middot;
+      inspired by Nadieh Bremer
+    </footer>
+  </body>
+</html>
