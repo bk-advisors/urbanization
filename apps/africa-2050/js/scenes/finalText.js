@@ -31,7 +31,8 @@ export default async function finalText({ state, groups, signal }) {
       <br/><br/>
       <small style="color:#999;">
         Inspired by Nadieh Bremer's 2015 East Asia piece.<br/>
-        Data: UN World Urbanization Prospects 2025.<br/>
+        Data: World Bank (urban %, 2024 actual) + UN World Urbanization
+        Prospects 2025 (city populations &amp; growth trajectories).<br/>
         Narrative framing: OECD et al., <em>Africa's Urbanisation Dynamics 2025</em>.
       </small>
     `,

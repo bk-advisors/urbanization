@@ -30,8 +30,8 @@ export default async function startBar({ state, groups, signal }) {
       <strong>${fmtPct((urban_2035 - urban_2025) / urban_2025)}</strong>
       increase in just a decade.
       <br/><br/>
-      That difference — about the entire population of Russia — is the size
-      of urban Africa's next growth pulse.
+      That difference — about the entire population of Bangladesh — is the
+      size of urban Africa's next growth pulse.
     `,
   });
 
