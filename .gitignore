@@ -6,8 +6,10 @@ media/
 .DS_Store
 Thumbs.db
 
-# Raw upstream data — large, regenerable via apps/africa-2050/data/_build_data.py
+# Raw upstream data — large, regenerable via apps/<app>/data/_build_data.py
 apps/africa-2050/data/raw/
+# africa-mmr-2030: exclude cached API responses but keep the build script committed
+apps/africa-mmr-2030/data/raw/*.json
 
 # Private / local-only files
 CLAUDE.md
@@ -19,4 +21,10 @@ CLAUDE.md
 .env.*
 *.bak
 *~
+
+# Internal validation / QA artefacts — not for public viz
+apps/africa-mmr-2030/docs/
+
+# LinkedIn writing samples used for style analysis — Matthew's source material, not for publication
+study/
 

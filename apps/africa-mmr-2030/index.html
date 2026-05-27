@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Africa & SDG 3.1: the road to 2030</title>
+
+    <meta name="description" content="A D3 visualization of African countries' maternal mortality trajectories from 2023 to 2030. Which countries are on track to hit SDG 3.1 (MMR below 70 per 100,000 live births)? Data: WHO/UNICEF/UNFPA/WBG/UNDESA Joint Estimates (MMEIG, 2025) via World Bank WDI." />
+    <meta name="author" content="Matthew Kuch, BK-Advisors" />
+
+    <meta property="og:title" content="Africa & SDG 3.1: the road to 2030" />
+    <meta property="og:description" content="Of 54 African countries, only 10 are projected to hit SDG 3.1 by 2030 at their long-run pace. A D3 visualization by Matthew Kuch / BK-Advisors." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bk-advisors.github.io/africa-mmr-2030/" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23ffffff'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23242852' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23F8A623'/%3E%3C/svg%3E" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Oswald:300,400,700|Open+Sans:400,600"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script defer type="module" src="js/main.js"></script>
+  </head>
+  <body>
+    <div id="stage">
+
+      <header id="header">
+        <h1 id="titleAll">
+          <span>Africa &amp; SDG 3.1: the road from </span>
+          <span class="year-base">2023</span>
+          <span> to </span>
+          <span class="year-proj">2030</span>
+        </h1>
+      </header>
+
+      <main id="main">
+        <div id="chartCol">
+          <div id="chart"></div>
+
+          <div id="callOut">
+            <div id="callOutCity" class="callOutTitle"></div>
+            <div id="callOutrule"></div>
+            <table class="fixed">
+              <tr>
+                <th></th>
+                <th>MMR<br><small>[per 100k]</small></th>
+                <th>ARR<br><small>[%/yr]</small></th>
+                <th>vs target<br><small>[Δ from 70]</small></th>
+              </tr>
+              <tr>
+                <td><span class="year-base-lbl">2023</span></td>
+                <td id="td-mmr-2023">—</td>
+                <td id="td-arr">—</td>
+                <td id="td-gap-2023">—</td>
+              </tr>
+              <tr>
+                <td><span class="year-proj-lbl">2030</span></td>
+                <td id="td-mmr-2030">—</td>
+                <td id="td-arr-req">—</td>
+                <td id="td-gap-2030">—</td>
+              </tr>
+              <tr>
+                <td id="td-status">status</td>
+                <td colspan="3" id="td-on-track">—</td>
+              </tr>
+            </table>
+          </div>
+
+          <div id="callOutCountryWrapper">
+            <div id="callOutCountry" class="callOutTitle"></div>
+          </div>
+        </div>
+
+        <aside id="section">
+          <div id="sectionHero"></div>
+          <div id="sectionTitle"></div>
+          <div id="sectionText"></div>
+          <div id="modeSwitch" class="btn-group" role="radiogroup">
+            <button id="popButton"  class="mode-btn active" data-mode="long">Long pace</button>
+            <button id="landButton" class="mode-btn"        data-mode="recent">Post-2016 pace</button>
+            <button id="densButton" class="mode-btn"        data-mode="required">On-pace</button>
+          </div>
+        </aside>
+      </main>
+
+      <nav id="clickerWrapper" aria-label="Story progress">
+        <div id="progressTrack"><div id="progressFill"></div></div>
+
+        <div id="progressButtonWrapper">
+          <button id="clickerBack" class="progressButton inactiveButton">Back</button>
+
+          <span class="circle-wrap">
+            <span class="step-label">open</span>
+            <span id="circle_0" class="circleBase clickable" data-step="0"></span>
+          </span>
+          <span class="circle-wrap">
+            <span class="step-label">map</span>
+            <span id="circle_1" class="circleBase clickable" data-step="1"></span>
+          </span>
+          <span class="circle-wrap">
+            <span class="step-label">target</span>
+            <span id="circle_2" class="circleBase clickable" data-step="2"></span>
+          </span>
+          <span class="circle-wrap">
+            <span class="step-label">trends</span>
+            <span id="circle_3" class="circleBase clickable" data-step="3"></span>
+          </span>
+          <span class="circle-wrap">
+            <span class="step-label">race</span>
+            <span id="circle_4" class="circleBase clickable" data-step="4"></span>
+          </span>
+          <span class="circle-wrap">
+            <span class="step-label">ARR</span>
+            <span id="circle_5" class="circleBase clickable" data-step="5"></span>
+          </span>
+          <span class="circle-wrap">
+            <span class="step-label">stakes</span>
+            <span id="circle_6" class="circleBase clickable" data-step="6"></span>
+          </span>
+          <span class="circle-wrap">
+            <span class="step-label">close</span>
+            <span id="circle_7" class="circleBase clickable" data-step="7"></span>
+          </span>
+
+          <button id="clickerFront" class="progressButton activeButton">Continue</button>
+        </div>
+      </nav>
+    </div>
+
+    <footer id="credits">
+      Built by <a href="https://bk-advisors.github.io/">Matthew Kuch</a> &middot;
+      <a href="https://bk-advisors.github.io/">BK-Advisors</a> &middot;
+      data <a href="https://data.worldbank.org/indicator/SH.STA.MMRT">World Bank SH.STA.MMRT</a> (MMEIG Joint Estimates, April 2025 release) &middot;
+      companion to <a href="https://bk-advisors.github.io/africa-mmr/">africa-mmr</a>
+    </footer>
+  </body>
+</html>
