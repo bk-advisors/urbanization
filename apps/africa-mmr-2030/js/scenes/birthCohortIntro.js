@@ -21,7 +21,7 @@ export default async function birthCohortIntro({ state, groups, signal }) {
   const total = state.countries.length;
 
   setSection({
-    hero: `A baby girl born in <span style="color:#bc4749;">${worst.name}</span> this week is <strong>${ratio}× more likely</strong> to die giving birth than her counterpart born in <span style="color:#005CB9;">${best.name}</span>.`,
+    hero: `A woman giving birth in <span style="color:#bc4749;">${worst.name}</span> today is <strong>${ratio}× more likely</strong> to die than one giving birth in <span style="color:#005CB9;">${best.name}</span>.`,
     title: "SDG 3.1: the promise we made to her",
     body: `
       The Sustainable Development Goals set a target. By <strong>2030</strong>,
